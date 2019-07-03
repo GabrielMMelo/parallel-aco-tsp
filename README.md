@@ -1,6 +1,6 @@
-# ACO-TSP :ant:
+# parallel-aco-tsp :ant:
 
-Parallel Ant Colony Optimization algorithm applied to the Traveller Sale Problem.
+**Parallel** Ant Colony Optimization (ACO) algorithm applied to the Traveller Salesman Problem (TSP).
 
 #### What were parallelized?
 
@@ -11,7 +11,7 @@ Parallel Ant Colony Optimization algorithm applied to the Traveller Sale Problem
 
 - Install openMPI
 ```shell
-sudo apt install libopenmpi-dev
+sudo apt install libopenmpi-dev python3-tk
 ```
 
 - Create a virtualenv
@@ -24,7 +24,9 @@ pip install -r requirements.txt
 
 ## How to use?
 
-For execution with 4 processes:
+For execution with **4 processes**:
 ```
 mpiexec -n 4 python main.py 1
 ```
+
+> The `1` is used to say to the program to use the parallel aco algorithm. For sequential process use `0` instead.
