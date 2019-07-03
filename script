@@ -1,0 +1,8 @@
+#!/bin/bash
+
+CONTADOR=0
+SOMA=0
+while [  $CONTADOR -lt 10 ]; do
+      /usr/bin/time -o output_sequential.txt -a -f "%e" python main.py 0
+      let CONTADOR=CONTADOR+1; 
+done
