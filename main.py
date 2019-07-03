@@ -18,7 +18,7 @@ def main():
             cidades.append(
                 dict(index=int(cidade[0]), x=int(cidade[1]), y=int(cidade[2])))
             pontos.append((int(cidade[1]), int(cidade[2])))
-    matriz_adjacencia = []  # matrix de adjacência
+    matriz_adjacencia = []  # matriz de adjacencia
     rank = len(cidades)
     for i in range(rank):
         linha = []
