@@ -45,7 +45,7 @@ For execution with **4 processes**:
 mpiexec -n 4 python main.py --parallel
 ```
 
-To use the sequential algorithm instead, just execute:
+To use the sequential algorithm instead, just run:
 ```shell
 python main.py
 ```
