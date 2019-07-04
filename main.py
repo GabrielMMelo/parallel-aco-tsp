@@ -1,12 +1,18 @@
 import math
 import sys
+import argparse
 
 from plot import plot
 
-IS_PARALLEL = int(sys.argv[1])
+parser = argparse.ArgumentParser(description='Parallelized and non-parallelized ACO algorithm.')
+parser.add_argument('--parallel', dest='is_parallel', action='store_const',
+                   const=True, default=False,
+                   help='Use parallelized algorithm\'s version')
 
-if IS_PARALLEL:
-    print("PARALLEL")
+args = parser.parse_args()
+
+if args.is_parallel:
+    print("Parallel!")
     from aco_parallel import ACO, Grafo
 else:
     from aco import ACO, Grafo
@@ -32,7 +38,7 @@ def main():
         for j in range(rank):
             linha.append(calc_distancia(cidades[i], cidades[j]))
         matriz_adjacencia.append(linha)
-    aco = ACO(cont_formiga=10, geracoes=100, alfa=1.0, beta=10.0, ro=0.5, Q=10)
+    aco = ACO(cont_formiga=100, geracoes=100, alfa=1.0, beta=10.0, ro=0.5, Q=10)
     grafo = Grafo(matriz_adjacencia, rank)
     try:
         caminho, custo = aco.resolve(grafo)
