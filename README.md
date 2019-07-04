@@ -6,6 +6,22 @@
 
 - The processing of ants was splited out into ant's chunks which are processed by the number of given processors.
 
+## Structure
+```shell
+.
+├── aco_parallel.py        # parallel version
+├── aco.py                 # sequential version
+├── datasets/              # input datasets
+├── main.py
+├── output/                # output of utils/scripts_{parallel,sequential}
+├── plot.py                # for plotting purpose
+├── README.md
+├── requirements.txt
+└── utils/
+    ├── script_parallel    # get parallel execution time 
+    └── script_sequential  # get sequential execution time
+```
+
 
 ## Requirements
 
@@ -26,7 +42,10 @@ pip install -r requirements.txt
 
 For execution with **4 processes**:
 ```
-mpiexec -n 4 python main.py 1
+mpiexec -n 4 python main.py --parallel
 ```
 
-> The `1` is used to say to the program to use the parallel aco algorithm. For sequential process use `0` instead.
+To use the sequential algorithm instead, just execute:
+```shell
+python main.py
+```
