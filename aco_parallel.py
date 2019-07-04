@@ -1,6 +1,11 @@
 import random
+import time
 
 from mpi4py import MPI
+
+import concurrent.futures
+
+overhead = 0
 
 
 class Grafo(object):
@@ -55,7 +60,8 @@ class ACO(object):
             _rank = comm.Get_rank()
 
             formigas = [
-                _Formiga(self, grafo) for i in range(int(self.cont_formiga/size))
+                _Formiga(self, grafo)
+                for i in range(int(self.cont_formiga / size))
             ]
             remaining = self.cont_formiga % size
             if remaining and _rank == size - 1:
@@ -65,8 +71,9 @@ class ACO(object):
             for formiga in formigas:
                 for j in range(grafo.rank - 1):
                     formiga._seleciona_proximo()
-                formiga.custo_total += grafo.matriz[formiga.tabu[-1]][  # retorno para cidade inicial
-                    formiga.tabu[0]]
+                formiga.custo_total += grafo.matriz[
+                    formiga.tabu[-1]][  # retorno para cidade inicial
+                        formiga.tabu[0]]
                 if formiga.custo_total < melhor_custo:
                     melhor_custo = formiga.custo_total
                     melhor_solucao = [] + formiga.tabu
@@ -80,6 +87,8 @@ class ACO(object):
                         formigas.append(formiga)
                 self._atualiza_feromonio(grafo, formigas)
         if not _rank:
+            global overhead
+            print(overhead)
             return melhor_solucao, melhor_custo
 
 
@@ -96,9 +105,12 @@ class _Formiga(object):
         self.tabu = []  # caminho escolhido pela formiga em uma geração
         self.feromonio_delta = []  #deltaT^Kij
         self.permitido = [i for i in range(grafo.rank)]
-        self.eta = [[  # 1/Lij
-            0 if i == j else 1 / grafo.matriz[i][j] for j in range(grafo.rank)
-        ] for i in range(grafo.rank)]
+        self.eta = [
+            [  # 1/Lij
+                0 if i == j else 1 / grafo.matriz[i][j]
+                for j in range(grafo.rank)
+            ] for i in range(grafo.rank)
+        ]
         inicio = random.randint(0, grafo.rank - 1)  # inicio aleatório
         self.tabu.append(inicio)
         self.atual = inicio
@@ -117,13 +129,27 @@ class _Formiga(object):
         probabilidades = [
             0 for i in range(self.grafo.rank)
         ]  # probabilidades de mover para uma cidade no próximo passo
-        for i in range(self.grafo.rank):
+
+        start = time.time()
+
+        def calcula_probabilidades(i):
             try:
                 self.permitido.index(i)  # checa se o noh eh permitido
                 probabilidades[i] = self.grafo.feromonio[self.atual][i] ** self.colonia.alfa * \
                     self.eta[self.atual][i] ** self.colonia.beta / denominador
             except ValueError:
-                pass   # descarta se a cidade nao for permitida
+                pass  # descarta se a cidade nao for permitida
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
+
+            futures = [
+                executor.submit(calcula_probabilidades, i)
+                for i in range(self.grafo.rank)
+            ]
+
+        end = time.time()
+        global overhead
+        overhead += end - start
 
         # seleciona a proxima cidade usando a técnica de roulette wheel
         selecionado = 0
@@ -140,8 +166,10 @@ class _Formiga(object):
 
     def _atualiza_feromonio_delta(self):
         """Atualiza os feromônios locais de uma formiga"""
-        self.feromonio_delta = [[0 for j in range(self.grafo.rank)]  # zera deltaT^kij
-                                for i in range(self.grafo.rank)]
+        self.feromonio_delta = [
+            [0 for j in range(self.grafo.rank)]  # zera deltaT^kij
+            for i in range(self.grafo.rank)
+        ]
         for _ in range(1, len(self.tabu)):
             i = self.tabu[_ - 1]
             j = self.tabu[_]
