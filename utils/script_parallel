@@ -1,0 +1,8 @@
+#!/bin/bash
+
+CONTADOR=0
+SOMA=0
+while [  $CONTADOR -lt 80 ]; do
+      /usr/bin/time -o output_parallel2.txt -a -f "%e" mpirun -n 8 python main.py 1
+      let CONTADOR=CONTADOR+1; 
+done
