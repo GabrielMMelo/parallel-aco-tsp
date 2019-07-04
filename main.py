@@ -13,6 +13,12 @@ parser.add_argument('--parallel',
                     const=True,
                     default=False,
                     help='Use parallelized algorithm\'s version')
+parser.add_argument('--plot',
+                    dest='plot',
+                    action='store_const',
+                    const=True,
+                    default=False,
+                    help='Plot the best path achieved')
 
 args = parser.parse_args()
 
@@ -53,17 +59,13 @@ def main():
             linha.append(calc_distancia(cidades[i], cidades[j]))
         matriz_adjacencia.append(linha)
 
-    aco = ACO(cont_formiga=100,
-              geracoes=100,
-              alfa=1.0,
-              beta=10.0,
-              ro=0.5,
-              Q=10)
+    aco = ACO(cont_formiga=100, geracoes=10, alfa=1.0, beta=10.0, ro=0.5, Q=10)
     grafo = Grafo(matriz_adjacencia, rank)
     try:
         caminho, custo = aco.resolve(grafo)
         print('custo total: {}, caminho: {}'.format(custo, caminho))
-        plot(pontos, caminho)
+        if args.plot:
+            plot(pontos, caminho)
     except TypeError:
         pass
 
