@@ -5,10 +5,14 @@ import argparse
 
 from plot import plot
 
-parser = argparse.ArgumentParser(description='Parallelized and non-parallelized ACO algorithm.')
-parser.add_argument('--parallel', dest='is_parallel', action='store_const',
-                   const=True, default=False,
-                   help='Use parallelized algorithm\'s version')
+parser = argparse.ArgumentParser(
+    description='Parallelized and non-parallelized ACO algorithm.')
+parser.add_argument('--parallel',
+                    dest='is_parallel',
+                    action='store_const',
+                    const=True,
+                    default=False,
+                    help='Use parallelized algorithm\'s version')
 
 args = parser.parse_args()
 
@@ -17,6 +21,7 @@ if args.is_parallel:
     from aco_parallel import ACO, Grafo
 else:
     from aco import ACO, Grafo
+
 
 def calc_distancia(cidade1, cidade2):
     """Calcula distância entre duas cidades
@@ -33,7 +38,7 @@ def main():
     cidades = []
     pontos = []
 
-    with open('./data/chn31.txt') as f:  # leitura das cidades
+    with open('./data/chn31.tsp') as f:  # leitura das cidades
         for linha in f.readlines():
             cidade = linha.split(' ')
             cidades.append(
@@ -48,7 +53,12 @@ def main():
             linha.append(calc_distancia(cidades[i], cidades[j]))
         matriz_adjacencia.append(linha)
 
-    aco = ACO(cont_formiga=100, geracoes=100, alfa=1.0, beta=10.0, ro=0.5, Q=10)
+    aco = ACO(cont_formiga=100,
+              geracoes=100,
+              alfa=1.0,
+              beta=10.0,
+              ro=0.5,
+              Q=10)
     grafo = Grafo(matriz_adjacencia, rank)
     try:
         caminho, custo = aco.resolve(grafo)
